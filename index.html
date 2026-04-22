@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHOP ULTRA FINAL</title>
+
+<style>
+body{
+margin:0;font-family:Arial;color:white;
+background:linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#1a2980);
+background-size:400% 400%;
+animation:bg 10s infinite;
+}
+@keyframes bg{
+0%{background-position:0%}
+50%{background-position:100%}
+100%{background-position:0%}
+}
+
+header{text-align:center;padding:15px;font-size:24px;text-shadow:0 0 15px cyan}
+
+.menu{display:flex}
+.menu button{
+flex:1;padding:12px;border:none;
+background:rgba(255,255,255,0.1);
+color:white;cursor:pointer;
+}
+.menu button:hover{background:cyan;color:black}
+
+.tab{display:none;padding:15px;text-align:center}
+.active{display:block}
+
+.card{
+background:rgba(255,255,255,0.1);
+border-radius:15px;padding:10px;margin:8px;
+display:inline-block;width:160px;
+box-shadow:0 0 15px cyan;
+transition:.2s;
+}
+.card:hover{transform:scale(1.05)}
+
+.btn{
+padding:8px 14px;border:none;border-radius:20px;
+margin:4px;cursor:pointer;font-weight:bold;
+transition:.2s;
+}
+.btn:hover{transform:scale(1.1)}
+
+.buy{background:linear-gradient(45deg,#ffcc00,#ff9900)}
+.copy{background:linear-gradient(45deg,#00ff99,#00cc66)}
+.get{background:linear-gradient(45deg,#00ccff,#0066ff)}
+
+input,select{
+padding:10px;border-radius:10px;border:none;margin:5px;
+}
+
+.fade{animation:fade .4s}
+@keyframes fade{
+from{opacity:0;transform:scale(.9)}
+to{opacity:1;transform:scale(1)}
+}
+
+/* WHEEL */
+.wheel-box{position:relative;width:260px;margin:auto}
+#wheel{
+width:260px;height:260px;border-radius:50%;
+background:conic-gradient(
+#00ffff 0deg 60deg,
+#00ff00 60deg 120deg,
+#ffff00 120deg 180deg,
+#ff8800 180deg 240deg,
+#ff00ff 240deg 300deg,
+#00aaff 300deg 360deg
+);
+border:4px solid white;
+box-shadow:0 0 30px #00ffff;
+}
+.pointer{
+position:absolute;top:-15px;left:50%;
+transform:translateX(-50%);
+font-size:28px;color:red;
+text-shadow:0 0 10px red;
+}
+
+/* POPUP */
+#popup{
+position:fixed;top:0;left:0;width:100%;height:100%;
+display:none;align-items:center;justify-content:center;
+background:rgba(0,0,0,0.7);
+}
+.box{
+background:white;color:black;padding:25px;border-radius:15px;
+animation:pop .3s;
+}
+@keyframes pop{
+from{transform:scale(.5)}
+to{transform:scale(1)}
+}
+
+/* BUY EFFECT */
+.buy-effect{
+position:fixed;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%) scale(0.5);
+background:linear-gradient(45deg,#00ffcc,#00ff66);
+color:black;
+padding:15px 25px;
+border-radius:20px;
+font-weight:bold;
+box-shadow:0 0 20px #00ffcc;
+z-index:999;
+opacity:0;
+animation:buyPop .6s ease forwards;
+}
+@keyframes buyPop{
+0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}
+50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}
+100%{opacity:0;transform:translate(-50%,-50%) scale(1)}
+}
+</style>
+</head>
+
+<body>
+
+<header>🌌 SHOP ULTRA FINAL 🌌</header>
+
+<div class="menu">
+<button onclick="tab('home')">Home</button>
+<button onclick="tab('nap')">Nạp</button>
+<button onclick="tab('spin')">Vòng quay</button>
+<button onclick="tab('shop')">Shop</button>
+<button onclick="tab('acc')">Acc</button>
+</div>
+
+<div id="home" class="tab active">
+<div id="loginForm">
+<input id="user" placeholder="Tài khoản"><br>
+<input id="pass" type="password" placeholder="Mật khẩu"><br>
+<button class="btn buy" onclick="register()">Tạo</button>
+<button class="btn buy" onclick="login()">Login</button>
+</div>
+<p>👤 <span id="name"></span></p>
+<p>💰 <span id="money">0</span></p>
+</div>
+
+<div id="nap" class="tab">
+<input id="mathe" placeholder="Mã thẻ"><br>
+<input id="seri" placeholder="Seri"><br>
+<select id="gia">
+<option value="50000">50k</option>
+<option value="100000">100k</option>
+<option value="200000">200k</option>
+</select><br>
+<button class="btn buy" onclick="nap()">Nạp</button>
+</div>
+
+<div id="spin" class="tab">
+<div class="wheel-box">
+<div class="pointer">⬇</div>
+<div id="wheel"></div>
+</div><br>
+<button class="btn buy" onclick="spin()">Quay 50k</button>
+</div>
+
+<div id="shop" class="tab">
+<div id="listAcc"></div>
+</div>
+
+<div id="acc" class="tab">
+<div id="myacc"></div>
+</div>
+
+<div id="popup">
+<div class="box">
+<h2 id="popupText"></h2>
+<button onclick="popup.style.display='none'">OK</button>
+</div>
+</div>
+
+<script>
+let current=null;
+let spinning=false;
+
+function tab(id){
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+function register(){
+localStorage.setItem(user.value,JSON.stringify({pass:pass.value,money:0,acc:[]}));
+alert("Tạo thành công");
+}
+
+function login(){
+let d=JSON.parse(localStorage.getItem(user.value));
+if(!d||d.pass!=pass.value)return alert("Sai");
+
+current=user.value;
+document.getElementById("loginForm").style.display="none";
+
+name.innerText=current;
+money.innerText=d.money;
+update();
+}
+
+function nap(){
+if(!current)return alert("Login trước");
+if(mathe.value.length<6||seri.value.length<6)return alert("Sai");
+
+let d=JSON.parse(localStorage.getItem(current));
+d.money+=parseInt(gia.value);
+localStorage.setItem(current,JSON.stringify(d));
+money.innerText=d.money;
+alert("Nạp thành công");
+}
+
+let accs=[];
+for(let i=1;i<=50;i++){
+accs.push({id:i,gia:[50000,100000,200000][Math.floor(Math.random()*3)]});
+}
+
+function renderShop(){
+let html="";
+accs.forEach(a=>{
+html+=`
+<div class="card">
+ACC #${a.id}<br>${a.gia}đ<br>
+<button class="btn buy" onclick="buy(${a.gia},this)">MUA</button>
+</div>`;
+});
+listAcc.innerHTML=html;
+}
+
+function showBuyEffect(text){
+let div=document.createElement("div");
+div.className="buy-effect";
+div.innerText=text;
+document.body.appendChild(div);
+setTimeout(()=>div.remove(),600);
+}
+
+function buy(p,el){
+if(!current)return alert("Login trước");
+
+let d=JSON.parse(localStorage.getItem(current));
+if(d.money<p)return alert("Thiếu tiền");
+
+d.money-=p;
+
+let tk="rbx"+Math.floor(Math.random()*9999);
+let mk="mk"+Math.floor(Math.random()*9999);
+
+d.acc.push({tk,mk});
+localStorage.setItem(current,JSON.stringify(d));
+money.innerText=d.money;
+
+showBuyEffect("✅ Mua thành công!");
+update();
+}
+
+function update(){
+let d=JSON.parse(localStorage.getItem(current));
+let html="";
+d.acc.forEach(a=>{
+html+=`
+<div class="card">
+${a.tk}/${a.mk}<br>
+<button class="btn get" onclick="alert('TK: ${a.tk}\\nMK: ${a.mk}')">LẤY</button>
+<button class="btn copy" onclick="navigator.clipboard.writeText('${a.tk}/${a.mk}')">COPY</button>
+</div>`;
+});
+myacc.innerHTML=html;
+}
+
+function spin(){
+if(!current)return alert("Login trước");
+if(spinning)return;
+
+let d=JSON.parse(localStorage.getItem(current));
+if(d.money<50000)return alert("Thiếu tiền");
+
+spinning=true;
+d.money-=50000;
+money.innerText=d.money;
+
+wheel.style.transition="none";
+wheel.style.transform="rotate(0deg)";
+void wheel.offsetWidth;
+
+let rewards=["50k","100k","200k","ACC","20k","10k"];
+let index=Math.floor(Math.random()*rewards.length);
+let degPer=360/rewards.length;
+let deg=1800 + index*degPer + degPer/2;
+
+wheel.style.transition="transform 3s";
+wheel.style.transform="rotate("+deg+"deg)";
+
+setTimeout(()=>{
+let r=rewards[index];
+
+if(r==="ACC"){
+d.acc.push({tk:"rbx"+Math.random(),mk:"mk"+Math.random()});
+}else{
+d.money+=parseInt(r);
+}
+
+localStorage.setItem(current,JSON.stringify(d));
+money.innerText=d.money;
+
+popupText.innerText="🎉 Trúng "+r+"!";
+popup.style.display="flex";
+
+update();
+spinning=false;
+},3000);
+}
+
+renderShop();
+</script>
+
+</body>
+</html>
